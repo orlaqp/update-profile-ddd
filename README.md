@@ -21,4 +21,11 @@ the email address of our customer.
 
 ![Architecture](/assets/architecture-diagram.png)
 
+## Patron service layers architecture
+
+![Patron Service](/assets/patron-service.png)
+
+
+
+
 
