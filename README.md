@@ -25,6 +25,19 @@ the email address of our customer.
 
 ![Patron Service](/assets/patron-service.png)
 
+## Third Party Tools
+
+- RabbitMQ
+- SQL Server
+- Docker
+- Redis
+
+## Topics/Patterns we are going to discuss
+
+- SOLID Principles
+- Domain Driven Design
+- Command Query Responsibility Segregation
+
 
 
 
