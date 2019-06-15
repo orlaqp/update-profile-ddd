@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/email")]
+    [Route("email")]
     [ApiController]
     public class EmailController : ControllerBase
     {
@@ -13,7 +13,6 @@ namespace API.Controllers
         public EmailController(CommandBus commandBus)
         {
             this.commandBus = commandBus;
-
         }
 
         [HttpPut("{id}")]
