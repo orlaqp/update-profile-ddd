@@ -7,6 +7,7 @@ using Commands.Email;
 using Core.CQRS;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace API.Configuration
@@ -16,11 +17,15 @@ namespace API.Configuration
         private static IEnumerable<TypeInfo> allTypes;
 
         public static void ConfigureServices(this IServiceCollection services) {
+            services.AddSingleton<IServiceProvider>(serviceProvider => serviceProvider);
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
             services.AddSwaggerGen(c =>{
                 c.SwaggerDoc("v1", new Info { Title = "Patron API", Version = "v1" });
             });
+
+            services.AddSingleton<ILogger>(serviceProvider => Log.Logger);
 
             RegisterCommandHandlers(services);
             RegisterCommandAndQueryBus(services);
@@ -28,7 +33,8 @@ namespace API.Configuration
 
         private static void RegisterCommandAndQueryBus(IServiceCollection services)
         {
-            services.AddSingleton<CommandBus>((IServiceProvider s) => new CommandBus(s));
+            services.AddSingleton<CommandBus>();
+            services.AddSingleton<QueryBus>();
         }
 
         private static void RegisterCommandHandlers(IServiceCollection services)
@@ -47,8 +53,6 @@ namespace API.Configuration
                     services.AddSingleton(i, classType);
                 }
             }
-
-            // services.AddSingleton<ICommandHandler<UpdateEmailCommand>, UpdateEmailCommandHandler>();
         }
 
         private static IEnumerable<TypeInfo> GetAllTypes() {

@@ -1,19 +1,20 @@
 using System;
 using Commands.Email;
 using Core.CQRS;
+using Serilog;
 
 namespace CommandHandlers.Email
 {
-
-    public interface TestInterface {
-        
-    }
-
-    public class UpdateEmailCommandHandler : ICommandHandler<UpdateEmailCommand>, TestInterface
+    public class UpdateEmailCommandHandler : ICommandHandler<UpdateEmailCommand>
     {
+        private readonly ILogger logger;
+        public UpdateEmailCommandHandler(ILogger logger)
+        {
+            this.logger = logger;
+        }
         public void Run(UpdateEmailCommand command)
         {
-            Console.WriteLine("Executing UpdateEmailCommandHandler");
+            logger.Debug("****** Executing UpdateEmailCommandHandler ******");
         }
     }
 }
