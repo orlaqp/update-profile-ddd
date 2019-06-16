@@ -5,13 +5,12 @@ using Serilog;
 
 namespace CommandHandlers.Email
 {
-    public class UpdateEmailCommandHandler : ICommandHandler<UpdateEmailCommand>
+    public class UpdateEmailCommandHandler : CommandHandler<UpdateEmailCommand>
     {
-        private readonly ILogger logger;
-        public UpdateEmailCommandHandler(ILogger logger)
+        public UpdateEmailCommandHandler(ILogger logger) : base(logger)
         {
-            this.logger = logger;
         }
+
         public void Run(UpdateEmailCommand command)
         {
             logger.Debug("****** Executing UpdateEmailCommandHandler ******");

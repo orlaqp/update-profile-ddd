@@ -41,17 +41,14 @@ namespace API.Configuration
         {
             // Make sure we are referencing commands and command handlers so reflection can pick up the types
             var handlerType = typeof(UpdateEmailCommandHandler);
-            var commandHandler = typeof(ICommandHandler<>);
-
-            foreach (var classType in GetAllTypes())
+            var commandHandler = typeof(CommandHandler<>);
+            
+            foreach (var classType in GetAllTypes().Where(t => !t.IsAbstract && IsSubclassOfRawGeneric(commandHandler, t)))
             {
-                foreach (var i in from i in classType.GetInterfaces()
-                                  where i.IsGenericType && i.GetGenericTypeDefinition() == commandHandler
-                                  select i)
-                {
-                    Console.WriteLine(i.FullName);
-                    services.AddSingleton(i, classType);
-                }
+                var parent = classType.BaseType;
+                var commandType = parent.GetGenericArguments().Where(t => t.IsSubclassOf(typeof(Command))).FirstOrDefault();
+                
+                services.AddSingleton(commandType, classType);
             }
         }
 
@@ -65,6 +62,17 @@ namespace API.Configuration
             }
 
             return allTypes;
+        }
+
+        static bool IsSubclassOfRawGeneric(Type generic, Type toCheck) {
+            while (toCheck != null && toCheck != typeof(object)) {
+                var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+                if (generic == cur) {
+                    return true;
+                }
+                toCheck = toCheck.BaseType;
+            }
+            return false;
         }
     }
 }

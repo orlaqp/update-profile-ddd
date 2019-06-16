@@ -7,7 +7,7 @@ namespace Core.CQRS
     {
         private readonly IServiceProvider services;
         private readonly ILogger logger;
-        private Type commandHandler = typeof(ICommandHandler<>);
+        private Type commandHandler = typeof(CommandHandler<>);
 
         public CommandBus(IServiceProvider services, ILogger logger)
         {
@@ -19,11 +19,11 @@ namespace Core.CQRS
         {
             try
             {
-                var handlerRegistration = commandHandler.MakeGenericType(command.GetType());
-                var handler = services.GetService(handlerRegistration);
+                var commandType = command.GetType();
+                var handler = services.GetService(commandType);
 
                 if (handler == null) {
-                    logger.Error("Handler not found for: " + handlerRegistration.FullName);
+                    logger.Error("Handler not found for: " + commandType.FullName);
                 }
 
                 var runMethod = handler.GetType().GetMethod("Run");
@@ -31,7 +31,6 @@ namespace Core.CQRS
             }
             catch (Exception ex)
             {
-                // TODO: Add logger here
                 logger.Error(ex, $"Error executing command {command.GetType().FullName}");
                 throw;
             }

@@ -15,6 +15,9 @@ namespace API.Controllers
             this.commandBus = commandBus;
         }
 
+        /// <summary>
+        /// Updates patron's email address
+        /// </summary>
         [HttpPut("{id}")]
         public ActionResult<CommandResult> Put(int id, [FromBody] string email)
         {
@@ -22,7 +25,6 @@ namespace API.Controllers
             commandBus.Run(command);
 
             return Ok(command.Result);
-
         }
 
     }
