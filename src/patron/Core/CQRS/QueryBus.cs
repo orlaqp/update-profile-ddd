@@ -2,7 +2,7 @@ using System;
 
 namespace Core.CQRS
 {
-    public class QueryBus
+    public abstract class QueryBus
     {
         private readonly IServiceProvider services;
         public QueryBus(IServiceProvider services)

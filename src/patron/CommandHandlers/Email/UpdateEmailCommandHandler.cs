@@ -14,6 +14,8 @@ namespace CommandHandlers.Email
         public void Run(UpdateEmailCommand command)
         {
             logger.Debug("****** Executing UpdateEmailCommandHandler ******");
+
+            
         }
     }
 }
