@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace Core.Domain
 {
-    public abstract class AggregateRoot
+    public abstract class AggregateRoot : Entity
     {
         protected Collection<INotification> events;
         

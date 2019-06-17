@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Core\Core.csproj" />
     <ProjectReference Include="..\Commands\Commands.csproj" />
     <ProjectReference Include="..\CommandHandlers\CommandHandlers.csproj" />
+    <ProjectReference Include="..\Infrastructure.SQLServer\Infrastructure.SQLServer.csproj" />
   </ItemGroup>
 
 </Project>

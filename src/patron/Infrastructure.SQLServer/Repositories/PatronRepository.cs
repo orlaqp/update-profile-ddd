@@ -13,7 +13,7 @@ namespace Infrastructure.SQLServer.Repositories
 
         public Patron GetById(Guid id)
         {
-            return GetById(id);
+            return ById(id);
         }
     }
 }

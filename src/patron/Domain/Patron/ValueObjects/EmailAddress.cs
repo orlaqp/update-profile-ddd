@@ -4,6 +4,12 @@ namespace Domain.Patron.ValueObjects
 {
     public class EmailAddress
     {
+
+        protected internal EmailAddress()
+        {
+            
+        }
+
         Validator validate = new Validator();
         public EmailAddress(string email)
         {
@@ -13,6 +19,6 @@ namespace Domain.Patron.ValueObjects
             Email = email;
         }
 
-        public string Email { get; }
+        public string Email { get; private set; }
     }
 }

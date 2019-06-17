@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Core.Domain;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ namespace Infrastructure.SQLServer.Repositories
             this.context = context;
         }
 
-        protected void GetById(Guid id)
+        protected T ById(Guid id)
         {
             throw new NotImplementedException();
         }
@@ -29,7 +30,7 @@ namespace Infrastructure.SQLServer.Repositories
             throw new NotImplementedException();
         }
 
-        protected void Search(Func<T, bool> cond)
+        protected IQueryable<T> Search(Func<T, bool> cond)
         {
             throw new NotImplementedException();
         }

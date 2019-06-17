@@ -1,4 +1,5 @@
 using Core.Domain;
+using Domain.Patron.Factories;
 using Domain.Patron.ValueObjects;
 using SimpleValidator;
 
@@ -9,20 +10,20 @@ namespace Domain.Patron
         protected internal Patron() {}
         private Validator validate = new Validator();
 
-        internal Patron(string firstName, string lastName, EmailAddress emailAddress) 
+        internal Patron(INewPatronData data) 
         {
-            validate.IsNotNullOrWhiteSpace(firstName);
-            validate.IsNotNull(emailAddress);
+            validate.IsNotNullOrWhiteSpace(data.FirstName);
+            validate.IsNotNull(data.Email);
 
             validate.ThrowValidationExceptionIfInvalid();
 
-            FirstName = firstName;
-            LastName = lastName;
-            EmailAddress = emailAddress;
+            FirstName = data.FirstName;
+            LastName = data.LastName;
+            EmailAddress = data.Email;
         }
 
-        public string FirstName { get; }
-        public string LastName { get; }
-        public EmailAddress EmailAddress { get; }
+        public string FirstName { get; private set;}
+        public string LastName { get; private set; }
+        public EmailAddress EmailAddress { get; private set; }
     }
 }

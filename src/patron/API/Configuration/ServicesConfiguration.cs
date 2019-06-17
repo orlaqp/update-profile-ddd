@@ -6,16 +6,19 @@ using CommandHandlers.Email;
 using Commands.Email;
 using Core.CQRS;
 using Core.Helpers;
+using Infrastructure.SQLServer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace API.Configuration
 {
     public static class ServicesConfiguration
     {
-        public static void ConfigureServices(this IServiceCollection services) {
+        public static void ConfigureServices(this IServiceCollection services, IConfiguration config) {
             services.AddSingleton<IServiceProvider>(serviceProvider => serviceProvider);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -25,7 +28,11 @@ namespace API.Configuration
             });
 
             services.AddSingleton<ILogger>(serviceProvider => Log.Logger);
-            
+
+            services.AddDbContext<CommandsDbContext>(
+                options => options.UseSqlServer(config.GetConnectionString("PatronDB"))
+            );
+
 
             RegisterCommandHandlers(services);
             RegisterCommandAndQueryBus(services);
@@ -34,7 +41,7 @@ namespace API.Configuration
         private static void RegisterCommandAndQueryBus(IServiceCollection services)
         {
             services.AddSingleton<CommandBus>();
-            services.AddSingleton<QueryBus>();
+            // services.AddSingleton<QueryBus>();
         }
 
         private static void RegisterCommandHandlers(IServiceCollection services)
@@ -48,8 +55,15 @@ namespace API.Configuration
 
             foreach (var classType in commandHandlers)
             {
-                var parent = classType.BaseType;
-                var commandType = parent.GetGenericArguments().Where(t => t.IsSubclassOf(typeof(Command))).FirstOrDefault();
+                var parentType = classType.BaseType;
+                var commandType = parentType
+                    .GetGenericArguments()
+                    .Where(t => t.IsSubclassOf(typeof(Command)))
+                    .FirstOrDefault();
+
+                if (commandType == null) {
+                    throw new InvalidOperationException("Command type not found");
+                }
                 
                 services.AddSingleton(commandType, classType);
             }
