@@ -13,6 +13,8 @@ using Serilog;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Infrastructure.SQLServer.Repositories;
+using Core.Domain;
 
 namespace API.Configuration
 {
@@ -34,8 +36,22 @@ namespace API.Configuration
             );
 
 
+            RegisterRepositories(services);
             RegisterCommandHandlers(services);
             RegisterCommandAndQueryBus(services);
+        }
+
+        private static void RegisterRepositories(IServiceCollection services)
+        {
+            var repository = typeof(Repository<>);
+            var repositories = ReflectionHelpers
+                .GetAllTypes()
+                .Where(t => !t.IsAbstract && ReflectionHelpers.IsSubclassOfRawGeneric(repository, t));
+
+            foreach (var classType in repositories)
+            {
+                services.AddScoped(classType);
+            }
         }
 
         private static void RegisterCommandAndQueryBus(IServiceCollection services)

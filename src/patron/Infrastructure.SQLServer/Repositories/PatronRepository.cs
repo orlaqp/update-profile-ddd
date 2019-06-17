@@ -7,8 +7,12 @@ namespace Infrastructure.SQLServer.Repositories
 {
     public class PatronRepository : Repository<Patron>, IPatronRepository
     {
-        public PatronRepository(DbContext context) : base(context)
+        public PatronRepository(CommandsDbContext context) : base(context)
         {
+        }
+
+        public void Add(Patron patron) {
+            Insert(patron);
         }
 
         public Patron GetById(Guid id)

@@ -40,7 +40,7 @@ namespace API
                     try
                     {
                         var context = services.GetService(typeof(CommandsDbContext)) as CommandsDbContext;
-                        PatronDataInitializer.Initialize(context);
+                        PatronDataInitializer.Initialize(context, services);
                     }
                     catch (System.Exception ex)
                     {   

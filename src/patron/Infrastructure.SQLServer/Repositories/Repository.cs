@@ -9,35 +9,37 @@ namespace Infrastructure.SQLServer.Repositories
     public abstract class Repository<T> where T : AggregateRoot
     {
         private readonly DbContext context;
+        private readonly DbSet<T> set;
 
         protected Repository(DbContext context)
         {
             this.context = context;
+            this.set = context.Set<T>();
         }
 
         protected T ById(Guid id)
         {
-            throw new NotImplementedException();
+            return set.FirstOrDefault(p => p.Id == id);
         }
 
-        protected void Add(T aggregateRoot)
+        protected void Insert(T aggregateRoot)
         {
-            throw new NotImplementedException();
+            set.Add(aggregateRoot);
         }
 
         protected void Delete(T aggregateRoot)
         {
-            throw new NotImplementedException();
+            set.Remove(aggregateRoot);
         }
 
         protected IQueryable<T> Search(Func<T, bool> cond)
         {
-            throw new NotImplementedException();
+            return set.Where(cond).AsQueryable();
         }
 
         protected void Update(T aggregateRoot)
         {
-            throw new NotImplementedException();
+            set.Update(aggregateRoot);
         }
     }
 }
