@@ -27,5 +27,18 @@ namespace Core.Helpers
             }
             return false;
         }
+
+        public static IEnumerable<TypeInfo> GetSubClassesOf(Type type) {
+            return ReflectionHelpers
+                .GetAllTypes()
+                .Where(t => !t.IsAbstract && ReflectionHelpers.IsSubclassOfRawGeneric(type, t));
+        }
+
+        public static Type GetGenericArgument(Type searchType, Type genericType) {
+            return genericType
+                .GetGenericArguments()
+                .Where(t => t.GetInterfaces().Contains(searchType))
+                .FirstOrDefault();
+        }
     }
 }

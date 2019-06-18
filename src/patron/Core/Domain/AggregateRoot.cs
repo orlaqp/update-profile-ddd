@@ -14,11 +14,11 @@ namespace Core.Domain
         public AggregateRoot(Guid id) : base(id)
         {
         }
-        protected Collection<INotification> events;
+        protected Collection<IDomainEvent> domainEvents;
         
-        protected void AddEvent(INotification eventDetails) {
-            events = events ?? new Collection<INotification>();
-            events.Add(eventDetails);
+        protected void AddDomainEvent(IDomainEvent eventDetails) {
+            domainEvents = domainEvents ?? new Collection<IDomainEvent>();
+            domainEvents.Add(eventDetails);
         }
     }
 }

@@ -9,7 +9,6 @@ namespace Core.CQRS
         public CommandHandler(ILogger logger)
         {
             this.logger = logger;
-
         }
 
     }

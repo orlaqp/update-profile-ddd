@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Infrastructure.SQLServer.Repositories;
 using CommandHandlers.Email;
+using Core.Domain;
+using Domain.Patron.Events;
 
 namespace API.Configuration
 {
@@ -35,16 +37,35 @@ namespace API.Configuration
 
             RegisterRepositories(services);
             RegisterCommandHandlers(services);
+            RegisterDomainEventHandlers(services);
             RegisterCommandAndQueryBus(services);
+        }
+
+        private static void RegisterDomainEventHandlers(IServiceCollection services)
+        {
+            // Make sure we are referencing commands and command handlers so reflection can pick up the types
+            var handlerType = typeof(PatronEmailUpdatedDomainEventHandler);
+            var eventHandlers = ReflectionHelpers.GetSubClassesOf(typeof(DomainEventHandler<>));
+
+            foreach (var eventHandler in eventHandlers)
+            {
+                var parentType = eventHandler.BaseType;
+                var eventType = ReflectionHelpers.GetGenericArgument(
+                    typeof(IDomainEvent),
+                    parentType);
+                
+                if (eventType == null) {
+                    throw new InvalidOperationException("Domain Event type not found");
+                }
+                
+                services.AddScoped(eventType, eventHandler);
+            }
         }
 
         private static void RegisterRepositories(IServiceCollection services)
         {
-            var repository = typeof(Repository<>);
-            var repositories = ReflectionHelpers
-                .GetAllTypes()
-                .Where(t => !t.IsAbstract && ReflectionHelpers.IsSubclassOfRawGeneric(repository, t));
-
+            var repositories = ReflectionHelpers.GetSubClassesOf(typeof(Repository<>));
+            
             foreach (var repositoryType in repositories)
             {
                 var implementedInterfaces = repositoryType.ImplementedInterfaces;
@@ -60,21 +81,12 @@ namespace API.Configuration
             }
         }
 
-        private static void RegisterCommandAndQueryBus(IServiceCollection services)
-        {
-            services.AddScoped<CommandBus>();
-            // services.AddSingleton<QueryBus>();
-        }
-
         private static void RegisterCommandHandlers(IServiceCollection services)
         {
             // Make sure we are referencing commands and command handlers so reflection can pick up the types
             var handlerType = typeof(UpdateEmailCommandHandler);
-            var commandHandler = typeof(CommandHandler<>);
-            var commandHandlers = ReflectionHelpers
-                .GetAllTypes()
-                .Where(t => !t.IsAbstract && ReflectionHelpers.IsSubclassOfRawGeneric(commandHandler, t));
-
+            var commandHandlers = ReflectionHelpers.GetSubClassesOf(typeof(CommandHandler<>));
+            
             foreach (var commandHandlerType in commandHandlers)
             {
                 var parentType = commandHandlerType.BaseType;
@@ -89,6 +101,12 @@ namespace API.Configuration
                 
                 services.AddScoped(commandType, commandHandlerType);
             }
+        }
+
+        private static void RegisterCommandAndQueryBus(IServiceCollection services)
+        {
+            services.AddScoped<CommandBus>();
+            // services.AddSingleton<QueryBus>();
         }
     }
 }

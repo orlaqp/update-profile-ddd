@@ -1,6 +1,6 @@
 namespace Core.Domain
 {
-    public interface INotification
+    public interface IDomainEvent
     {
          
     }
