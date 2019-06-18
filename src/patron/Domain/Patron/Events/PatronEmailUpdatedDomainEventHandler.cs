@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Core.Domain;
 using Serilog;
 
@@ -10,7 +11,7 @@ namespace Domain.Patron.Events
         {
         }
 
-        public override void Handle(PatronEmailUpdatedDomainEvent notificationDetails)
+        public override async Task Handle(PatronEmailUpdatedDomainEvent notificationDetails)
         {
             Console.WriteLine("Handling PatronEmailUpdatedDomainEvent");
         }

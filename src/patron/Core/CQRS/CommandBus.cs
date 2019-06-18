@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Core.Exceptions;
 using Serilog;
 using SimpleValidator.Exceptions;
@@ -17,7 +18,7 @@ namespace Core.CQRS
             this.logger = logger;
         }
 
-        public void Run(Command command)
+        public async Task Run(Command command)
         {
             try
             {
@@ -29,7 +30,8 @@ namespace Core.CQRS
                 }
 
                 var runMethod = handler.GetType().GetMethod("Run");
-                runMethod.Invoke(handler, new object[] { command });    
+                Task result = (Task)runMethod.Invoke(handler, new object[] { command });    
+                await result;
             }
             catch (BusinessException ex) {
                 command.Result.Error(ex.Code, ex.Message);

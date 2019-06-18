@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Serilog;
 
 namespace Core.CQRS
@@ -10,6 +11,8 @@ namespace Core.CQRS
         {
             this.logger = logger;
         }
+
+        public abstract Task Run(T command);
 
     }
 }

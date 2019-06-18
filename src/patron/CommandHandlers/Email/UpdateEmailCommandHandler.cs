@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Commands.Email;
 using Core.CQRS;
 using Core.Exceptions;
@@ -20,12 +21,12 @@ namespace CommandHandlers.Email
             this.patrons = patrons;
         }
 
-        public void Run(UpdateEmailCommand command)
+        public async override Task Run(UpdateEmailCommand command)
         {
             logger.Debug("****** Executing UpdateEmailCommandHandler ******");
             var email = new EmailAddress(command.Email);
 
-            var patron = patrons.GetById(command.Id);
+            var patron = await patrons.GetById(command.Id);
 
             if (patron == null) {
                 throw new BusinessException("PatronNotFound", $"Patron {command.Id} not found");
@@ -33,5 +34,10 @@ namespace CommandHandlers.Email
 
             patron.UpdateEmail(email);
         }
+
+        // public override Task Run(UpdateEmailCommand command)
+        // {
+        //     throw new NotImplementedException();
+        // }
     }
 }

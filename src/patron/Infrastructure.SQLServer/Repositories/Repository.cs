@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,9 +17,9 @@ namespace Infrastructure.SQLServer.Repositories
             this.unitOfWork = unitOfWork;
         }
 
-        protected T ById(Guid id)
+        protected async Task<T> ById(Guid id)
         {
-            return set.FirstOrDefault(p => p.Id == id);
+            return await set.FirstOrDefaultAsync(p => p.Id == id);
         }
 
         protected void Insert(T aggregateRoot)

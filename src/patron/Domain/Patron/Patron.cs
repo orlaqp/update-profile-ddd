@@ -1,5 +1,6 @@
 using System;
 using Core.Domain;
+using Domain.Patron.Events;
 using Domain.Patron.Factories;
 using Domain.Patron.ValueObjects;
 using SimpleValidator;
@@ -34,6 +35,14 @@ namespace Domain.Patron
             }
 
             EmailAddress = email;
+            ResetPreferences();
+
+            var emailUpdatedEvent = new PatronEmailUpdatedDomainEvent(this.Id, this.EmailAddress.Email);
+            QueueDomainEvent(emailUpdatedEvent);
+        }
+
+        private void ResetPreferences() {
+            
         }
     }
 }

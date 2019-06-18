@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Domain.Patron;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +16,9 @@ namespace Infrastructure.SQLServer.Repositories
             Insert(patron);
         }
 
-        public Patron GetById(Guid id)
+        public async Task<Patron> GetById(Guid id)
         {
-            return ById(id);
+            return await ById(id);
         }
     }
 }

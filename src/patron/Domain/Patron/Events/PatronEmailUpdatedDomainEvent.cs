@@ -1,16 +1,18 @@
+using System;
 using Core.Domain;
-using Domain.Patron.Events;
 using Domain.Patron.ValueObjects;
 
 namespace Domain.Patron.Events
 {
     public class PatronEmailUpdatedDomainEvent : IDomainEvent
     {
-        public PatronEmailUpdatedDomainEvent(EmailAddress newEmail) 
+        public PatronEmailUpdatedDomainEvent(Guid patronId, string newAddress) 
         {
-            NewEmail = newEmail;
+            PatronId = patronId;
+            NewAddress = newAddress;
         }
 
-        public EmailAddress NewEmail { get; }
+        public Guid PatronId { get; }
+        public string NewAddress { get; }
     }
 }

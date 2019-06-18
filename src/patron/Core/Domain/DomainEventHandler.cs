@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Serilog;
 
 namespace Core.Domain
@@ -11,6 +12,6 @@ namespace Core.Domain
 
         protected ILogger Logger { get; }
 
-        public abstract void Handle(T notificationDetails);
+        public abstract Task Handle(T notificationDetails);
     }
 }

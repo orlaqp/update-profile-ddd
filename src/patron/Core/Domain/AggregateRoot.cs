@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Core.Domain
@@ -16,7 +15,7 @@ namespace Core.Domain
         }
         protected Collection<IDomainEvent> domainEvents;
         
-        protected void AddDomainEvent(IDomainEvent eventDetails) {
+        protected void QueueDomainEvent(IDomainEvent eventDetails) {
             domainEvents = domainEvents ?? new Collection<IDomainEvent>();
             domainEvents.Add(eventDetails);
         }

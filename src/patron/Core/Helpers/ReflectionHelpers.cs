@@ -40,5 +40,12 @@ namespace Core.Helpers
                 .Where(t => t.GetInterfaces().Contains(searchType))
                 .FirstOrDefault();
         }
+
+        public static object GetPropertyValue(object obj, Type entityType, string propertyName)
+        {
+            return entityType
+                .GetField(propertyName, BindingFlags.NonPublic | BindingFlags.Instance)
+                .GetValue(obj);
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Commands.Email;
 using Core.CQRS;
 using Infrastructure.SQLServer.Repositories;
@@ -23,11 +24,11 @@ namespace API.Controllers
         /// Updates patron's email address
         /// </summary>
         [HttpPut("{id}")]
-        public ActionResult<CommandResult> Put(Guid id, [FromBody] string email)
+        public async Task<ActionResult<CommandResult>> Put(Guid id, [FromBody] string email)
         {
             var command = new UpdateEmailCommand(id, email);
-            commandBus.Run(command);
-            unitOfWork.Commit();
+            await commandBus.Run(command);
+            await unitOfWork.Commit();
 
             return Ok(command.Result);
         }
