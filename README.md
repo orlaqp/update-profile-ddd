@@ -415,6 +415,125 @@ QueueDomainEvent(emailUpdatedEvent);
 
 This event mechanism is a very flexible way to notify other parts of the application or even external systems about specific conditions in your business and allow the interested parts to react to them in a decoupled way which also goes hand in hands with the Single Resposibility Principle (SRP) and the Open-Closed Principle. 
 
+We saw above how we could create handlers for our commands, guess what? You can also do the same for your events! This is how:
+
+```c#
+namespace Domain.Patron.Events
+{
+    public class PatronEmailUpdatedDomainEventHandler : DomainEventHandler<PatronEmailUpdatedDomainEvent>
+    {
+        public PatronEmailUpdatedDomainEventHandler(ILogger logger) : base(logger) { }
+
+        public override async Task Handle(PatronEmailUpdatedDomainEvent notificationDetails)
+        {
+            Console.WriteLine("Handling PatronEmailUpdatedDomainEvent");
+        }
+    }
+}
+```
+
+As you can see, the pattern is very similar to the way to define our command handlers. In this case we inherit from a different class called `DomainEventHandler<>` and pass the event we want to handle. The rest is up to you :-)
+
+In the DDD world, events are divided in two different groups.
+
+- **Domain Events**: These events are useful to comunicate different aggregates.
+- **Integration Events**: These events are useful to integrate different systems.
+
+
 ### Infrastructure Layer
+
+This layer represents an abstraction of how we want to interact with our infrastructure but without writing any code to do so. In C# terms this layer should only contain interfaces that create contracts between our app and our infrastructure. Here is an example:
+
+```c#
+namespace Infrastructure.Repositories
+{
+    public interface IPatronRepository
+    {
+         Task<Patron> GetById(Guid id);
+    }
+}
+```
+
+This interface specify that we need to be able to retrieve a patron using its id, nothing else. Doing this allow us to liberate ourselves from a specific infrastructure. Let's say we are testing if our application is going to work better in relational database or in a document based database such as MongoDB. We could easily create two different infrastructure implementation and switch between them by just changing our service registrations in our DI container.
+
 ### Infrastructure SQL Server Layer
 
+As mentioned before, this is an infrastructure implementation specifically to SQL Server. In this layer, we are going to have our repository's implementations and others. For example:
+
+```c#
+namespace Infrastructure.SQLServer.Repositories
+{
+    public class PatronRepository : Repository<Patron>, IPatronRepository
+    {
+        public PatronRepository(IUnitOfWork unitOfWork) : base(unitOfWork) { }
+
+        public void Add(Patron patron) {
+            Insert(patron);
+        }
+
+        public async Task<Patron> GetById(Guid id)
+        {
+            return await ById(id);
+        }
+    }
+}
+```
+
+Some details about this code are:
+
+```c#
+public class PatronRepository : Repository<Patron>, IPatronRepository
+```
+
+We inherit from a `Repository` class that contains the following:
+
+```c#
+namespace Infrastructure.SQLServer.Repositories
+{
+    public abstract class Repository<T> where T : AggregateRoot
+    {
+        private readonly DbSet<T> set;
+        private readonly IUnitOfWork unitOfWork;
+
+        protected Repository(IUnitOfWork unitOfWork)
+        {
+            this.set = unitOfWork.Context.Set<T>();
+            this.unitOfWork = unitOfWork;
+        }
+
+        protected async Task<T> ById(Guid id)
+        {
+            return await set.FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        protected void Insert(T aggregateRoot)
+        {
+            set.Add(aggregateRoot);
+        }
+
+        protected void Delete(T aggregateRoot)
+        {
+            T existing = set.Find(aggregateRoot);
+
+            if (existing == null) {
+                return;
+            }
+
+            set.Remove(existing);
+        }
+
+        protected IQueryable<T> Search(Func<T, bool> cond)
+        {
+            return set.Where(cond).AsQueryable();
+        }
+
+        protected void Update(T aggregateRoot)
+        {
+            unitOfWork.Context.Entry(aggregateRoot).State = EntityState.Modified;
+            set.Attach(aggregateRoot);
+        }
+    }
+}
+```
+
+As you can see is a typical implementation of a generic repository when using Entity Framework and the unit of work pattern. You may be scratching your head and asking why do we need to create a specific repo for Patron and only have a subset of what this repo already offers?? Do I love to repeat code? No I do not, but having a repository that offer actions that are not available for an aggregate root is worse than create this extra repos. This way you know exactly what you need for an aggregate and prepare for that.

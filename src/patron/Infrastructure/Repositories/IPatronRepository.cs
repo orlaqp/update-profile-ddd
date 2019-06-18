@@ -6,6 +6,7 @@ namespace Infrastructure.Repositories
 {
     public interface IPatronRepository
     {
+         void Add(Patron patron);
          Task<Patron> GetById(Guid id);
     }
 }

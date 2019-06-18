@@ -12,7 +12,7 @@ namespace Infrastructure.SQLServer.Seed
     {
         public static void Initialize(CommandsDbContext context, IServiceProvider services) {
             context.Database.EnsureCreated();
-            var patronRepo = services.GetService(typeof(IPatronRepository)) as PatronRepository;
+            var patronRepo = services.GetService(typeof(IPatronRepository)) as IPatronRepository;
 
             var patrons = new Collection<Patron>();
             patrons.Add(PatronFactory.CreateFrom(new NewPatronData { FirstName = "First", LastName = "Last", Email = new Domain.Patron.ValueObjects.EmailAddress("email@address.com") }));
