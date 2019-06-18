@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using CommandHandlers.Email;
-using Commands.Email;
 using Core.CQRS;
 using Core.Helpers;
 using Infrastructure.SQLServer;
@@ -14,8 +10,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Infrastructure.SQLServer.Repositories;
-using Core.Domain;
-using Infrastructure.Repositories;
+using CommandHandlers.Email;
 
 namespace API.Configuration
 {

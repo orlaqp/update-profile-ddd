@@ -1,5 +1,7 @@
 using System;
+using Core.Exceptions;
 using Serilog;
+using SimpleValidator.Exceptions;
 
 namespace Core.CQRS
 {
@@ -29,10 +31,18 @@ namespace Core.CQRS
                 var runMethod = handler.GetType().GetMethod("Run");
                 runMethod.Invoke(handler, new object[] { command });    
             }
+            catch (BusinessException ex) {
+                command.Result.Error(ex.Code, ex.Message);
+            }
             catch (Exception ex)
             {
-                logger.Error(ex, $"Error executing command {command.GetType().FullName}");
-                throw;
+                if (ex.InnerException != null && ex.InnerException.GetType() == typeof(ValidationException)) {
+                    command.Result.ValidationErrors(ex.InnerException as ValidationException);
+                } else {
+                    logger.Error(ex, $"Error executing command {command.GetType().FullName}");
+                    command.Result.UnexpectedError();
+                }
+
             }
             
         }

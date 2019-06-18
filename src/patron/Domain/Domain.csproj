@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Validation\Validation.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 

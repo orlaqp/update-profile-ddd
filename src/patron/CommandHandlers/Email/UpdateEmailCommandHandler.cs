@@ -1,6 +1,7 @@
 using System;
 using Commands.Email;
 using Core.CQRS;
+using Core.Exceptions;
 using Domain.Patron.ValueObjects;
 using Infrastructure.Repositories;
 using Serilog;
@@ -27,7 +28,7 @@ namespace CommandHandlers.Email
             var patron = patrons.GetById(command.Id);
 
             if (patron == null) {
-                throw new InvalidOperationException($"Patron {command.Id} not found");
+                throw new BusinessException("PatronNotFound", $"Patron {command.Id} not found");
             }
 
             patron.UpdateEmail(email);

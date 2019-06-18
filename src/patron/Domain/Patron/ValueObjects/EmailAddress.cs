@@ -6,14 +6,13 @@ namespace Domain.Patron.ValueObjects
     {
 
         protected internal EmailAddress()
-        {
-            
+        {   
         }
 
         Validator validate = new Validator();
         public EmailAddress(string email)
         {
-            validate.IsEmail(email);
+            validate.IsEmail(nameof(Email), email);
             validate.ThrowValidationExceptionIfInvalid();
 
             Email = email;
