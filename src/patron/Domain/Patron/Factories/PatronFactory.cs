@@ -1,3 +1,4 @@
+using System;
 using Domain.Patron.ValueObjects;
 
 namespace Domain.Patron.Factories
@@ -5,7 +6,7 @@ namespace Domain.Patron.Factories
     public static class PatronFactory
     {
         public static Patron CreateFrom(INewPatronData data) {
-            return new Patron(data);
+            return new Patron(Guid.NewGuid(), data);
         }
     }
 }

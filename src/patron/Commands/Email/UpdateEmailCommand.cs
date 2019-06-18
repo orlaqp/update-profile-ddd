@@ -1,10 +1,11 @@
+using System;
 using Core.CQRS;
 
 namespace Commands.Email
 {
-    public class UpdateEmailCommand : Command
+    public class UpdateEmailCommand : UpdateCommand<Guid>
     {
-        public UpdateEmailCommand(string email)
+        public UpdateEmailCommand(Guid id, string email) : base(id)
         {
             Email = email;
         }

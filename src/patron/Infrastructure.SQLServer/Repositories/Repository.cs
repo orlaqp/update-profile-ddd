@@ -1,20 +1,19 @@
 using System;
 using System.Linq;
 using Core.Domain;
-using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.SQLServer.Repositories
 {
     public abstract class Repository<T> where T : AggregateRoot
     {
-        private readonly DbContext context;
         private readonly DbSet<T> set;
+        private readonly IUnitOfWork unitOfWork;
 
-        protected Repository(DbContext context)
+        protected Repository(IUnitOfWork unitOfWork)
         {
-            this.context = context;
-            this.set = context.Set<T>();
+            this.set = unitOfWork.Context.Set<T>();
+            this.unitOfWork = unitOfWork;
         }
 
         protected T ById(Guid id)
@@ -29,7 +28,13 @@ namespace Infrastructure.SQLServer.Repositories
 
         protected void Delete(T aggregateRoot)
         {
-            set.Remove(aggregateRoot);
+            T existing = set.Find(aggregateRoot);
+
+            if (existing == null) {
+                return;
+            }
+
+            set.Remove(existing);
         }
 
         protected IQueryable<T> Search(Func<T, bool> cond)
@@ -39,7 +44,8 @@ namespace Infrastructure.SQLServer.Repositories
 
         protected void Update(T aggregateRoot)
         {
-            set.Update(aggregateRoot);
+            unitOfWork.Context.Entry(aggregateRoot).State = EntityState.Modified;
+            set.Attach(aggregateRoot);
         }
     }
 }

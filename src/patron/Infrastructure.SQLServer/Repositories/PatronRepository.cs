@@ -7,7 +7,7 @@ namespace Infrastructure.SQLServer.Repositories
 {
     public class PatronRepository : Repository<Patron>, IPatronRepository
     {
-        public PatronRepository(CommandsDbContext context) : base(context)
+        public PatronRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
 

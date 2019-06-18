@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Infrastructure.SQLServer.Repositories;
 using Core.Domain;
+using Infrastructure.Repositories;
 
 namespace API.Configuration
 {
@@ -35,6 +36,7 @@ namespace API.Configuration
                 options => options.UseSqlServer(config.GetConnectionString("PatronDB"))
             );
 
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             RegisterRepositories(services);
             RegisterCommandHandlers(services);
@@ -48,15 +50,24 @@ namespace API.Configuration
                 .GetAllTypes()
                 .Where(t => !t.IsAbstract && ReflectionHelpers.IsSubclassOfRawGeneric(repository, t));
 
-            foreach (var classType in repositories)
+            foreach (var repositoryType in repositories)
             {
-                services.AddScoped(classType);
+                var implementedInterfaces = repositoryType.ImplementedInterfaces;
+                var repositoryInterface = repositoryType
+                    .ImplementedInterfaces
+                    .FirstOrDefault(x => x.Name.EndsWith("Repository"));
+
+                if (repositoryInterface == null) {
+                    throw new InvalidOperationException($"Class {repositoryType.FullName} inherit Repository but does not implement any interface that ends in 'Repository'");
+                }
+
+                services.AddScoped(repositoryInterface, repositoryType);
             }
         }
 
         private static void RegisterCommandAndQueryBus(IServiceCollection services)
         {
-            services.AddSingleton<CommandBus>();
+            services.AddScoped<CommandBus>();
             // services.AddSingleton<QueryBus>();
         }
 
@@ -69,9 +80,9 @@ namespace API.Configuration
                 .GetAllTypes()
                 .Where(t => !t.IsAbstract && ReflectionHelpers.IsSubclassOfRawGeneric(commandHandler, t));
 
-            foreach (var classType in commandHandlers)
+            foreach (var commandHandlerType in commandHandlers)
             {
-                var parentType = classType.BaseType;
+                var parentType = commandHandlerType.BaseType;
                 var commandType = parentType
                     .GetGenericArguments()
                     .Where(t => t.IsSubclassOf(typeof(Command)))
@@ -81,7 +92,7 @@ namespace API.Configuration
                     throw new InvalidOperationException("Command type not found");
                 }
                 
-                services.AddSingleton(commandType, classType);
+                services.AddScoped(commandType, commandHandlerType);
             }
         }
     }
