@@ -50,7 +50,7 @@ the email address of our customer.
 As you can see, this solution is composed of multiple projects and if you are not familiar with some of the patterns used here it may be a little hard to follow the code. So lets start all the way at the top and then I will explain the function of every layer and how to use it.
 
 
-##### API Layer
+### API Layer
 
 As with any other API you may have seen before, this layer allow your users to interact with your service. This is a very small representation of what a REST API would be but in essence is composed of Controller and Actions with the corresponding HTTP verbs.
 
@@ -139,7 +139,7 @@ If you are not familiar with `Swagger` it basically allow you to describe the st
 In our case we describe our API while developing which is even better by using this package: `Swashbuckle.AspNetCore` which basically ready our C# code and create the Swagger schema for us. If you run this app and navigates to: https://localhost:5001/swagger/index.html you will get the Swagger UI.
 
 
-##### Commands Layer
+### Commands Layer
 
 You can think of this layer as a description of what you code can do from a business perspective, remember that I mentioned above that we were going to be using Domain Driven Design (DDD) so the classes in this layer should be a direct result of you conversion(s) with you domain expert(s). This file structure should be readable by developers and business people because just by looking at the file names should be enough to tell you what the commands is all about. Some people also use this layer as documentation also.
 
@@ -167,7 +167,7 @@ As you can see is a simple class that basically contain the information needed t
 
 As I mentioned before, this is layer is pretty simple and it serve also as documentation of our business actions (commands).
 
-##### Command Handlers Layer
+### Command Handlers Layer
 
 When presenting the API layer we briefly talked about how the `Command Bus` somehow connected a command with its handler(s) and execute it. Now let's take a deep dive into this section and explain exactly how it happens.
 
@@ -316,7 +316,7 @@ public async override Task Run(UpdateEmailCommand command)
 
 This small piece of code reaches to more than one application layer. On one side, it reaches the domain layer by using the `EmailAddress` value object and the `Patron` entity. On the other hand, by using the `IPatronRepository` through the patrons field, it reaches the `Infrastructure` and `Infrastructure.SQLServer` layers. The `Domain` layers is where we have our business logic and the infrastructure layers help us saving our data so some kind of storage, in this case SQL Server.
 
-##### Domain Layer
-##### Infrastructure Layer
-##### Infrastructure SQL Server Layer
+### Domain Layer
+### Infrastructure Layer
+### Infrastructure SQL Server Layer
 
