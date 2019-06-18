@@ -50,7 +50,7 @@ the email address of our customer.
 As you can see, this solution is composed of multiple projects and if you are not familiar with some of the patterns used here it may be a little hard to follow the code. So lets start all the way at the top and then I will explain the function of every layer and how to use it.
 
 
-##### API Layer
+#### API Layer
 
 As with any other API you may have seen before, this layer allow your users to interact with your service. This is a very small representation of what a REST API would be but in essence is composed of Controller and Actions with the corresponding HTTP verbs.
 
