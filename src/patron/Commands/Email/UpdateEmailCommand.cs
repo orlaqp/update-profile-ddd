@@ -9,7 +9,7 @@ namespace Commands.Email
         {
             Email = email;
         }
-
+        
         public string Email { get; }
     }
 }

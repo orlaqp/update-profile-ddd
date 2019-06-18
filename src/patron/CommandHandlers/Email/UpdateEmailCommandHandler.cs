@@ -34,10 +34,5 @@ namespace CommandHandlers.Email
 
             patron.UpdateEmail(email);
         }
-
-        // public override Task Run(UpdateEmailCommand command)
-        // {
-        //     throw new NotImplementedException();
-        // }
     }
 }

@@ -48,9 +48,5 @@ namespace Core.CQRS
             }
             
         }
-
-        public void Commit() {
-
-        }
     }
 }
