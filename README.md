@@ -42,6 +42,7 @@ the email address of our customer.
 - .NET Code
 - Dependency Injection
 - Reflection
+- Entity Framewrok Core
 
 ## How to follow the code in this repo ?
 
@@ -317,6 +318,103 @@ public async override Task Run(UpdateEmailCommand command)
 This small piece of code reaches to more than one application layer. On one side, it reaches the domain layer by using the `EmailAddress` value object and the `Patron` entity. On the other hand, by using the `IPatronRepository` through the patrons field, it reaches the `Infrastructure` and `Infrastructure.SQLServer` layers. The `Domain` layers is where we have our business logic and the infrastructure layers help us saving our data so some kind of storage, in this case SQL Server.
 
 ### Domain Layer
+
+From a business point of view this is the most important layer of you entire solution. This layer will mainly contain three object types.
+
+- Entities
+- Value Objects
+- Services
+
+**Note:** If you are no familiar with DDD it would be nice to do some online reading to get some context at least. This would help you a lot understanding this layer.
+
+Let's check our `EmailAddress` value object:
+
+```c#
+namespace Domain.Patron.ValueObjects
+{
+    public class EmailAddress
+    {
+        // This constructor is used by Entity Framework
+        protected internal EmailAddress() { }
+
+        Validator validate = new Validator();
+
+        public EmailAddress(string email)
+        {
+            validate.IsEmail(nameof(Email), email);
+            validate.ThrowValidationExceptionIfInvalid();
+
+            Email = email;
+        }
+
+        public string Email { get; private set; }
+    }
+}
+```
+
+A value object is an immutable type that is distinguishable only by the state of its properties. They do not have a uniquely identify like entities do. From a technical point of view there is nothing crazy about this class, it is simple and based on its accessors you can see that it is "immutable" (you can mutate it if you use Reflection).
+
+Our Patron entity on the other hand is defined like this:
+
+```c#
+namespace Domain.Patron
+{
+    public class Patron : AggregateRoot
+    {
+        protected internal Patron() {}
+        private Validator validate = new Validator();
+
+        internal Patron(Guid id, INewPatronData data) : base(id) 
+        {
+            validate.IsNotNullOrWhiteSpace(data.FirstName);
+            validate.IsNotNull(data.Email);
+
+            validate.ThrowValidationExceptionIfInvalid();
+
+            FirstName = data.FirstName;
+            LastName = data.LastName;
+            EmailAddress = data.Email;
+        }
+
+        public string FirstName { get; private set;}
+        public string LastName { get; private set; }
+        public EmailAddress EmailAddress { get; private set; }
+
+        public void UpdateEmail(EmailAddress email)
+        {
+            if (email == null) {
+                throw new InvalidOperationException("Email cannot be null");
+            }
+
+            EmailAddress = email;
+            ResetPreferences();
+
+            var emailUpdatedEvent = new PatronEmailUpdatedDomainEvent(
+                this.Id,
+                this.EmailAddress.Email);
+            QueueDomainEvent(emailUpdatedEvent);
+        }
+
+        private void ResetPreferences() {
+            // reset patron's preferences
+        }
+    }
+}
+```
+
+As you can see, this class is inheriting `AggregateRoot` that name is not arbitrary. It is in fact one of DDD "artifacts" and it basically means that it is the entry point to an aggregate. So this class it is not just an `Entity` it is a special type called `Aggregate Root`. An important detail to take into consideration here is that this class does not has any persistence notion. It only deal with business logic in memory which separate your business logic from the "details" of how this information is going to persisted or retrieved.
+
+An extra piece of information in this class that is great to achieve decoupling is the following:
+
+```c#
+var emailUpdatedEvent = new PatronEmailUpdatedDomainEvent(
+    this.Id,
+    this.EmailAddress.Email);
+QueueDomainEvent(emailUpdatedEvent);
+```
+
+This event mechanism is a very flexible way to notify other parts of the application or even external systems about specific conditions in your business and allow the interested parts to react to them in a decoupled way which also goes hand in hands with the Single Resposibility Principle (SRP) and the Open-Closed Principle. 
+
 ### Infrastructure Layer
 ### Infrastructure SQL Server Layer
 
