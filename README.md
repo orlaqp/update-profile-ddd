@@ -53,9 +53,9 @@ As you can see, this solution is composed of multiple projects and if you are no
 
 ### API Layer
 
-As with any other API you may have seen before, this layer allow your users to interact with your service. This is a very small representation of what a REST API would be but in essence is composed of Controller and Actions with the corresponding HTTP verbs.
+As with any other API you may have seen before, this layer allow your users to interact with your service. This is a very small representation of what a REST API would be but in essence is composed of Controllers and Actions with the corresponding HTTP verbs.
 
-Now, the way the actions are implemented is what may be a little different to what you are used to see in other APIs. At first you may think that the way the code was written is a little bit overkill and that may hold true for very simple applications but the idea behind this architecture was not design for such applications. Instead, you can think of this repo as a enterprise skeleton architecture with a very simple example of a way to execute a command.
+Now, the way the actions are implemented is what may be a little different to what you are used to see in other APIs. At first you may think that the way the code was written is a little bit overkill and that may be true for very simple applications but the idea behind this architecture was not design for such applications. Instead, you can think of this repo as a enterprise skeleton architecture with a very simple example of a way to execute a command.
 
 Enough for introductions already, let's start analysing some code:
 
@@ -92,7 +92,7 @@ namespace API.Controllers
 }
 ```
 
-Pretty simple and straight forward right? We have a simple controller with an action that according to its documentation is supposed to update the email address for a Patron/Customer. Also notice how the constructor of the controller receives two parameters, a `UnitOfWork` and a `CommandBus`. These two services are key and in order to explain how they are used lets concentrate ourselves on the Put's method:
+Pretty simple and straight forward right? We have a simple controller with an action that according to its documentation is supposed to update the email address for a Patron/Customer. Also notice how the constructor of the controller receives two parameters, a `UnitOfWork` and a `CommandBus`. These two services are key in this architecture. In order to explain how they are used lets check the Put's method:
 
 ```c#
 public async Task<ActionResult<CommandResult>> Put(Guid id, [FromBody] string email)
@@ -111,7 +111,7 @@ We receive the customer's id and email and create a command with that:
 var command = new UpdateEmailCommand(id, email);
 ```
 
-This idea is coming from a Pattern called Command and Query Responsibility Segregation (CQRS). When following this pattern every `action` that somehow needs to change the data should enclosed in a `Command`. Commands are pretty simple classes that contain the data the command needs to do its job. In this case, we need the Patron/Customer Id and the new email address.
+This idea is coming from a Pattern called Command and Query Responsibility Segregation (CQRS). When following this pattern every `action` that somehow needs to change the data should be enclosed in a `Command`. Commands are pretty simple classes that contain the data the command needs to do its job. In this case, we need the Patron/Customer Id and the new email address.
 
 Then we have this:
 
@@ -119,7 +119,7 @@ Then we have this:
 await commandBus.Run(command);
 ```
 
-The commands bus is coming from the `core` project and it has the responsibility of finding the right command handler(s) `registered` for this command and execute them. I will expand on this topic later but for now let's say that the "wiring" is done using `Dependency Injection`. Also notice how this code using `Async` programming.
+The commands bus is coming from the `core` project and it has the responsibility of finding the command handler(s) `registered` for this command and execute them. I will expand on this topic later but for now let's say that the "wiring" is done using `Dependency Injection`. Also notice how this code is using `Async` programming.
 
 After running the command we have the following:
 
@@ -137,12 +137,12 @@ If you are not familiar with `Swagger` it basically allow you to describe the st
 
 (extracted from: https://swagger.io/docs/specification/2-0/what-is-swagger/)
 
-In our case we describe our API while developing which is even better by using this package: `Swashbuckle.AspNetCore` which basically ready our C# code and create the Swagger schema for us. If you run this app and navigates to: https://localhost:5001/swagger/index.html you will get the Swagger UI.
+In our case we describe our API while developing it which is even better by using this package: `Swashbuckle.AspNetCore` which basically ready our C# code and create the Swagger schema for us. If you run this app and navigates to: https://localhost:5001/swagger/index.html you will get the Swagger UI.
 
 
 ### Commands Layer
 
-You can think of this layer as a description of what you code can do from a business perspective, remember that I mentioned above that we were going to be using Domain Driven Design (DDD) so the classes in this layer should be a direct result of you conversion(s) with you domain expert(s). This file structure should be readable by developers and business people because just by looking at the file names should be enough to tell you what the commands is all about. Some people also use this layer as documentation also.
+You can think of this layer as a description of what your code can do from a business perspective, remember that I mentioned above we are  using Domain Driven Design (DDD) so the classes in this layer should be a direct result of your/team conversion(s) with you domain expert(s). This file structure should be readable by developers and business people because just by looking at the file names should be enough to tell you what the commands is all about. Some people also use this layer as documentation and easily initiate new team members to the code.
 
 Now, let's see how we define a command:
 
@@ -164,9 +164,9 @@ namespace Commands.Email
 }
 ```
 
-As you can see is a simple class that basically contain the information needed to execute the command. In addition, we are inheriting from UpdateCommand which is shortcut because most update operations need an Id so instead of repeating the Id property, it is encapsulated in the `UpdateCommand` class. Also, notice that the `Email` property es readonly ideally this command should not change their input values once the are created, only the `Result` which is included in the base class for all commands which surprise surprise is called `Command` class :-)
+As you can see is a simple class that basically contain the information needed to execute the command. In addition, we are inheriting from `UpdateCommand` which is shortcut because most update operations need an Id so instead of repeating the Id property, it is encapsulated in the `UpdateCommand` class. Also, notice that the `Email` property is readonly, ideally this command should not change their input values once it is created, only the `Result` which is included in the base class for all commands which surprise surprise is called `Command` class :-)
 
-As I mentioned before, this is layer is pretty simple and it serve also as documentation of our business actions (commands).
+As I mentioned before, this layer is pretty simple and it serve also as documentation of our business actions (commands).
 
 ### Command Handlers Layer
 
