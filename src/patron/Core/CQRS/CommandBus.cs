@@ -1,12 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using Core.Exceptions;
+using Core.Helpers;
 using Serilog;
 using SimpleValidator.Exceptions;
 
 namespace Core.CQRS
 {
-    public class CommandBus
+    public class CommandBus : ICommandBus
     {
         private readonly IServiceProvider services;
         private readonly ILogger logger;
@@ -29,17 +30,16 @@ namespace Core.CQRS
                     logger.Error("Handler not found for: " + commandType.FullName);
                 }
 
-                var runMethod = handler.GetType().GetMethod("Run");
-                Task result = (Task)runMethod.Invoke(handler, new object[] { command });    
-                await result;
-            }
-            catch (BusinessException ex) {
-                command.Result.Error(ex.Code, ex.Message);
+                await ReflectionHelpers.InvokeAsyncMethod(handler, "Run", new [] { command });
             }
             catch (Exception ex)
             {
-                if (ex.InnerException != null && ex.InnerException.GetType() == typeof(ValidationException)) {
-                    command.Result.ValidationErrors(ex.InnerException as ValidationException);
+                if (ex.InnerException != null) {
+                    if (ex.InnerException.GetType() == typeof(ValidationException)) {
+                        command.Result.ValidationErrors(ex.InnerException as ValidationException);
+                    } else if (ex.InnerException.GetType() == typeof(BusinessException)) {
+                        command.Result.Error(ex as BusinessException);
+                    }
                 } else {
                     logger.Error(ex, $"Error executing command {command.GetType().FullName}");
                     command.Result.UnexpectedError();

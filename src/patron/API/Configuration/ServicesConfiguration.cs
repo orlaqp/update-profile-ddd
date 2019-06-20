@@ -38,7 +38,7 @@ namespace API.Configuration
             RegisterRepositories(services);
             RegisterCommandHandlers(services);
             RegisterDomainEventHandlers(services);
-            RegisterCommandAndQueryBus(services);
+            RegisterBus(services);
         }
 
         private static void RegisterDomainEventHandlers(IServiceCollection services)
@@ -103,9 +103,10 @@ namespace API.Configuration
             }
         }
 
-        private static void RegisterCommandAndQueryBus(IServiceCollection services)
+        private static void RegisterBus(IServiceCollection services)
         {
-            services.AddScoped<CommandBus>();
+            services.AddScoped<ICommandBus, CommandBus>();
+            services.AddScoped<IDomainEventBus, DomainEventBus>();
             // services.AddSingleton<QueryBus>();
         }
     }

@@ -26,6 +26,12 @@ namespace Core.CQRS
             Error("NotFound", "Not Found");
         }
 
+        internal void Error(BusinessException ex) {
+            Success = false;
+            Errors.Clear();
+            Errors.Add(ex.Code, ex.Message);
+        }
+
         internal void Error(string code, string message) {
             Success = false;
             Errors.Clear();

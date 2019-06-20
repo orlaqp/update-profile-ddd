@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Commands.Email;
 using Core.CQRS;
-using Infrastructure.SQLServer.Repositories;
+using Infrastructure.SQLServer;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -12,9 +12,9 @@ namespace API.Controllers
     public class EmailController : ControllerBase
     {
         private readonly IUnitOfWork unitOfWork;
-        private readonly CommandBus commandBus;
+        private readonly ICommandBus commandBus;
 
-        public EmailController(IUnitOfWork unitOfWork, CommandBus commandBus)
+        public EmailController(IUnitOfWork unitOfWork, ICommandBus commandBus)
         {
             this.unitOfWork = unitOfWork;
             this.commandBus = commandBus;

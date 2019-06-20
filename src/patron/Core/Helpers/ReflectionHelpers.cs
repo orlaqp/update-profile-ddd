@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Core.Helpers
 {
@@ -46,6 +47,14 @@ namespace Core.Helpers
             return entityType
                 .GetField(propertyName, BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(obj);
+        }
+
+        public static Task InvokeAsyncMethod(object obj, string methodName, object[] parameters) {
+            var objType = obj.GetType();
+            var handleMethod = objType.GetMethod(methodName);
+            var taskResult = (Task)handleMethod.Invoke(obj, parameters);
+
+            return taskResult;
         }
     }
 }
