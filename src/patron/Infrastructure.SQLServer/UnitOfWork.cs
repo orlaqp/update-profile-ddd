@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Audit;
 using Core.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,15 +11,18 @@ namespace Infrastructure.SQLServer
     {
         private readonly IServiceProvider services;
         private readonly IDomainEventBus domainEventBus;
+        private readonly IAuditor auditor;
 
         public UnitOfWork(
             CommandsDbContext context,
             IServiceProvider services,
-            IDomainEventBus domainEventBus)
+            IDomainEventBus domainEventBus,
+            IAuditor auditor)
         {
             Context = context;
             this.services = services;
             this.domainEventBus = domainEventBus;
+            this.auditor = auditor;
         }
 
         public DbContext Context { get; }
@@ -44,7 +48,14 @@ namespace Infrastructure.SQLServer
 
             foreach (var aggRoot in aggRootEntries)
             {
-                await domainEventBus.Handle((aggRoot as AggregateRoot).Events);
+                foreach (var domainEvent in (aggRoot as AggregateRoot).Events) {
+                    await domainEventBus.Handle(domainEvent);
+
+                    if (domainEvent.Auditable) {
+                        await auditor.Audit(domainEvent);
+                    }
+                }
+
             }
         }
 

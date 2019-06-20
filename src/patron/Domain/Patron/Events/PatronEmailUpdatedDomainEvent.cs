@@ -14,5 +14,6 @@ namespace Domain.Patron.Events
 
         public Guid PatronId { get; }
         public string NewAddress { get; }
+        public bool Auditable => true;
     }
 }

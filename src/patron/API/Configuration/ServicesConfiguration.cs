@@ -13,6 +13,7 @@ using Infrastructure.SQLServer.Repositories;
 using CommandHandlers.Email;
 using Core.Domain;
 using Domain.Patron.Events;
+using Core.Audit;
 
 namespace API.Configuration
 {
@@ -34,6 +35,7 @@ namespace API.Configuration
             );
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IAuditor, Auditor>();
 
             RegisterRepositories(services);
             RegisterCommandHandlers(services);
