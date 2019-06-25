@@ -142,7 +142,7 @@ In our case we describe our API while developing it which is even better by usin
 
 ### Commands Layer
 
-You can think of this layer as a description of what your code can do from a business perspective, remember that I mentioned above we are  using Domain Driven Design (DDD) so the classes in this layer should be a direct result of your/team conversion(s) with you domain expert(s). This file structure should be readable by developers and business people because just by looking at the file names should be enough to tell you what the commands is all about. Some people also use this layer as documentation and easily initiate new team members to the code.
+You can think of this layer as a description of what your code can do from a business perspective, remember that I mentioned above we are  using Domain Driven Design (DDD) so the classes in this layer should be a direct result of your/team conversation(s) with you domain expert(s). This file structure should be readable by developers and business people because just by looking at the file names should be enough to tell you what the commands is all about. Some people also use this layer as documentation and easily initiate new team members to the code.
 
 Now, let's see how we define a command:
 
@@ -437,6 +437,17 @@ As you can see, the pattern is very similar to the way to define our command han
 In the DDD world, events are divided in two different groups.
 
 - **Domain Events**: These events are useful to comunicate different aggregates.
+
+Let me explain this using the following example. Lets say we are working on a Shopping Cart app and based on our domain rules we defined a bounded context that had at least the following two aggregates:
+
+- cart aggregate
+- shipping aggregate
+
+Our task is the following, once an order gets created we need to notifiy the shipping department so they can start preparing the order for shipping. Now lets review our setup, we have an aggregate to deal with the orders and another one to deal with shippings. On solution would be to reference the shipping aggregate root from the order aggregate root which would create a a hard dependency between them, not exactly the best approach in this case. So, what would be a better solution here? how can we communicate these two aggregates keeping them clean and separated? YOu probably guess it already ... `domain events`.
+
+The idea here would be to raise an event from the oder aggregate root that could be handled somehow by the shipping aggregate root and posibly other parts of the bounded context that could also be interested in it.
+
+
 - **Integration Events**: These events are useful to integrate different systems.
 
 
@@ -537,3 +548,11 @@ namespace Infrastructure.SQLServer.Repositories
 ```
 
 As you can see is a typical implementation of a generic repository when using Entity Framework and the unit of work pattern. You may be scratching your head and asking why do we need to create a specific repo for Patron and only have a subset of what this repo already offers?? Do I love to repeat code? No I do not, but having a repository that offer actions that are not available for an aggregate root is worse than create this extra repos. This way you know exactly what you need for an aggregate and prepare for that.
+
+### How to do Auditing
+
+In most systems we need to keep a record of the changes that have been applied to our entities so I included that as part of the code of this small solution. Unfortunately, in many code basis you see these code mixed with your business logic when in reality they should be separate. Let me show you what I mean by using an example from this solution:
+
+
+
+
