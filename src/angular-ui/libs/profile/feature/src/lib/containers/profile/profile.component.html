@@ -1,0 +1,26 @@
+<div
+  class="vh-100 profile-background p-40"
+  fxLayout="column"
+  fxLayoutAlign="end end"
+>
+
+    
+
+  <!-- name -->
+  <div fxFlex="initial" class="mat-display-1">
+    Jane Doe
+  </div>
+  <!-- email -->
+  <div fxFlex="initial">
+    <mat-form-field appearance="outline">
+      <mat-label>Outline form field</mat-label>
+      <input matInput placeholder="Placeholder" />
+      <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+      <mat-hint>Hint</mat-hint>
+    </mat-form-field>
+  </div>
+  <!-- action -->
+  <div fxFlex="initial">
+    <button mat-raised-button color="primary" (click)="onClick">Update</button>
+  </div>
+</div>

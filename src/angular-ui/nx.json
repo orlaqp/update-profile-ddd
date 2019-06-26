@@ -1,0 +1,21 @@
+{
+  "npmScope": "angular-ui",
+  "implicitDependencies": {
+    "angular.json": "*",
+    "package.json": "*",
+    "tsconfig.json": "*",
+    "tslint.json": "*",
+    "nx.json": "*"
+  },
+  "projects": {
+    "patron-ui-e2e": {
+      "tags": []
+    },
+    "patron-ui": {
+      "tags": []
+    },
+    "profile-feature": {
+      "tags": []
+    }
+  }
+}
