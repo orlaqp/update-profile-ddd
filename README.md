@@ -549,10 +549,16 @@ namespace Infrastructure.SQLServer.Repositories
 
 As you can see is a typical implementation of a generic repository when using Entity Framework and the unit of work pattern. You may be scratching your head and asking why do we need to create a specific repo for Patron and only have a subset of what this repo already offers?? Do I love to repeat code? No I do not, but having a repository that offer actions that are not available for an aggregate root is worse than create this extra repos. This way you know exactly what you need for an aggregate and prepare for that.
 
-### How to do Auditing
+### Auditing
 
 In most systems we need to keep a record of the changes that have been applied to our entities so I included that as part of the code of this small solution. Unfortunately, in many code basis you see these code mixed with your business logic when in reality they should be separate. Let me show you what I mean by using an example from this solution:
 
 
+### Caching
 
+- Done through buses (Query and Command bus) using a custom attribute ( `CacheAttribute(int ttl)` ) .. documentation coming soon
+
+### Authorization
+
+- Done through buses (Query and Command bus) using a custom attribute ( ActivityAttribute(string activityName) ) .. documentation coming soon
 
