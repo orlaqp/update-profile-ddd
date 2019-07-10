@@ -7,3 +7,14 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=Password01
+  rabbitmq:
+    image: rabbitmq:3
+    ports:
+      - 5672:5672
+  mongo:
+    image: mongo
+    ports:
+      - 28017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root

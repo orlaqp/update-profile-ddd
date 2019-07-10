@@ -14,6 +14,7 @@ using CommandHandlers.Email;
 using Core.Domain;
 using Domain.Patron.Events;
 using Core.Audit;
+using Infrastructure.SQLServer.DomainEventHandlers;
 
 namespace API.Configuration
 {

@@ -1,6 +1,5 @@
 using System;
 using Core.Domain;
-using Domain.Patron.ValueObjects;
 
 namespace Domain.Patron.Events
 {

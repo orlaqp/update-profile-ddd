@@ -1,9 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using Core.Domain;
+using Domain.Patron.Events;
 using Serilog;
 
-namespace Domain.Patron.Events
+namespace Infrastructure.SQLServer.DomainEventHandlers
 {
     public class PatronEmailUpdatedDomainEventHandler : DomainEventHandler<PatronEmailUpdatedDomainEvent>
     {
