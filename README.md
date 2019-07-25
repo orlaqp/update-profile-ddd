@@ -315,12 +315,15 @@ public async override Task Run(UpdateEmailCommand command)
 }
 ```
 
-This small piece of code reaches to more than one application layer. On one side, it reaches the domain layer by using the `EmailAddress` value object and the `Patron` entity. On the other hand, by using the `IPatronRepository` through the patrons field, it reaches the `Infrastructure` and `Infrastructure.SQLServer` layers. The `Domain` layers is where we have our business logic and the infrastructure layers help us saving our data so some kind of storage, in this case SQL Server.
+This small piece of code reaches to more than one application layer. On one side, it reaches the 
+yer by using the `EmailAddress` value object and the `Patron` entity. On the other hand, by using the `IPatronRepository` through the patrons field, it reaches the `Infrastructure` and `Infrastructure.SQLServer` layers. The `Domain` layers is where we have our business logic and the infrastructure layers help us saving our data so some kind of storage, in this case SQL Server.
 
 ### Domain Layer
 
 From a business point of view this is the most important layer of you entire solution. This layer will mainly contain three object types.
 
+- Aggregates
+- Aggregate Roots
 - Entities
 - Value Objects
 - Services
