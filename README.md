@@ -32,14 +32,15 @@ the email address of our customer.
 - Docker
 - Redis
 
-## Topics/Patterns we are going to discuss
+## Main Topics/Patterns we are going to discuss
 
+- Object Oriented Programming (OOP)
 - SOLID Principles
-- Domain Driven Design
-- Command Query Responsibility Segregation
+- Domain Driven Design (DDD)
+- Command Query Responsibility Segregation (CQRS)
 - Repository Pattern
 - Unit of Work
-- .NET Code
+- .NET Core
 - Dependency Injection
 - Reflection
 - Entity Framewrok Core
