@@ -32,7 +32,7 @@ the email address of our customer.
 - Docker
 - Redis
 
-## Main Topics/Patterns we are going to discuss
+## Main Topics/Patterns we are using
 
 - Object Oriented Programming (OOP)
 - SOLID Principles
